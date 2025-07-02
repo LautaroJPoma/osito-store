@@ -1,5 +1,9 @@
 package com.lautaro.osito_store.repository;
 
-public interface OrderDetailRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.lautaro.osito_store.entity.OrderDetail;
+
+public interface OrderDetailRepository extends JpaRepository<OrderDetail, Long> {
 
 }
