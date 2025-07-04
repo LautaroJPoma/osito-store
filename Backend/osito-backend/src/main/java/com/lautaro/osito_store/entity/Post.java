@@ -30,7 +30,6 @@ public class Post {
 
     private Double price;
 
-    private String imageUrl;
 
     private Integer stock;
 
@@ -89,14 +88,7 @@ public class Post {
         this.price = price;
     }
 
-    
-    public String getImageUrl() {
-        return imageUrl;
-    }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
 
     public Product getProduct() {
         return product;

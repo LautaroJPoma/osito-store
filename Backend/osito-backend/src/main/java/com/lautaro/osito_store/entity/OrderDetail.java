@@ -21,19 +21,19 @@ public class OrderDetail {
     private PurchaseOrder purchaseOrder;
 
     @ManyToOne
-    @JoinColumn(name = "product_id", nullable = false)
-    private Product product;
+    @JoinColumn(name = "variant_id", nullable = false)
+    private ProductVariant productVariant;
 
     public OrderDetail() {
     }
 
     
 
-    public OrderDetail(Long id, Integer quantity, PurchaseOrder purchaseOrder, Product product) {
+    public OrderDetail(Long id, Integer quantity, PurchaseOrder purchaseOrder, ProductVariant productVariant) {
         this.id = id;
         this.quantity = quantity;
         this.purchaseOrder = purchaseOrder;
-        this.product = product;
+        this.productVariant = productVariant;
     }
 
 
@@ -62,12 +62,12 @@ public class OrderDetail {
         this.purchaseOrder = purchaseOrder;
     }
 
-    public Product getProduct() {
-        return product;
+    public ProductVariant getProductVariant() {
+        return productVariant;
     }
 
-    public void setProduct(Product product) {
-        this.product = product;
+    public void setProductVariant(ProductVariant productVariant) {
+        this.productVariant = productVariant;
     }
 
 }

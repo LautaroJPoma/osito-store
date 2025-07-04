@@ -20,7 +20,11 @@ public class PostDTO {
 
     private List<String> imageUrls;
 
+    private Long sellerId;
+
     private List<Long> variantIds;
+
+    
 
     public String getTitle() {
         return title;
@@ -92,6 +96,14 @@ public class PostDTO {
 
     public void setVariantIds(List<Long> variantIds) {
         this.variantIds = variantIds;
+    }
+
+    public Long getSellerId() {
+        return sellerId;
+    }
+
+    public void setSellerId(Long sellerId) {
+        this.sellerId = sellerId;
     }
 
     

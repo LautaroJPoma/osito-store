@@ -1,14 +1,12 @@
 package com.lautaro.osito_store.service;
 
-
-
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Page;
+import java.util.List;
 
 import com.lautaro.osito_store.dto.PostDTO;
 
 public interface PostService {
-    Page<PostDTO> getAllPosts(Pageable pageable);
+    
+    List<PostDTO> getAllPosts();
 
     PostDTO getPostById(Long id);
 

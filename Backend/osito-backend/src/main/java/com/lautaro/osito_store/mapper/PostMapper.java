@@ -25,6 +25,7 @@ public class PostMapper {
         dto.setImageUrls(post.getImageUrls());
         dto.setStatus(post.getStatus().toString());
         dto.setProductId(post.getProduct() != null ? post.getProduct().getId() : null);
+        dto.setSellerId(post.getSeller() != null ? post.getSeller().getId() : null);
 
         List<Long> variantIds = post.getVariants().stream()
             .map(ProductVariant::getId)

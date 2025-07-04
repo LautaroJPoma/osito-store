@@ -19,8 +19,8 @@ public class OrderDetailMapper {
             orderDetailDTO.setPurchaseOrderId(null);
         }
 
-        if (orderDetail.getProduct() != null) {
-            orderDetailDTO.setProductId(orderDetail.getProduct().getId());
+        if (orderDetail.getProductVariant() != null) {
+            orderDetailDTO.setProductId(orderDetail.getProductVariant().getId());
         }
 
         return orderDetailDTO;

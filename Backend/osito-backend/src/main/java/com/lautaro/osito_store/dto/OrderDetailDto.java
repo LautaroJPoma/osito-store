@@ -8,7 +8,7 @@ public class OrderDetailDTO {
 
     private Long purchaseOrderId;
 
-    private Long productId;
+    private Long variantId;
 
     public Long getId() {
         return id;
@@ -34,12 +34,12 @@ public class OrderDetailDTO {
         this.purchaseOrderId = purchaseOrderId;
     }
 
-    public Long getProductId() {
-        return productId;
+    public Long getVariantId() {
+        return variantId;
     }
 
-    public void setProductId(Long productId) {
-        this.productId = productId;
+    public void setProductId(Long variantId) {
+        this.variantId = variantId;
     }
 
     
