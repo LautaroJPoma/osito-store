@@ -104,4 +104,9 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
         purchaseOrderRepository.save(purchaseOrder);
     }
 
+    @Override
+    public boolean existsById(Long id) {
+        return purchaseOrderRepository.existsById(id);
+    }
+
 }

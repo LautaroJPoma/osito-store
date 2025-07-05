@@ -118,4 +118,9 @@ public class PostServiceImpl implements PostService {
         postRepository.delete(post);
     }
 
+    @Override
+    public boolean existsById(Long id) {
+        return postRepository.existsById(id);
+    }
+
 }

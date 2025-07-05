@@ -19,4 +19,6 @@ public interface PurchaseOrderService {
 
     void deletePurchaseOrder(Long id);
 
+    boolean existsById(Long id);
+
 }

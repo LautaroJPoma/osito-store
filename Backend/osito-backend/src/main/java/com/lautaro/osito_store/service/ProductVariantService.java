@@ -15,4 +15,6 @@ public interface ProductVariantService {
     ProductVariantDTO updateProductVariant(ProductVariantDTO productVariantDTO, Long id);
 
     void deleteProductVariant(Long id);
+
+    boolean existsById(Long id);
 }

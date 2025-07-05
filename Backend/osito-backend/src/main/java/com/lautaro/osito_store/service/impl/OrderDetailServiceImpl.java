@@ -138,4 +138,9 @@ public class OrderDetailServiceImpl implements OrderDetailService {
             purchaseOrderService.updateTotal(purchaseOrder);
         }
     }
+
+    @Override
+    public boolean existsById(Long id) {
+        return orderDetailRepository.existsById(id);
+    }
 }

@@ -15,4 +15,6 @@ public interface PostService {
     PostDTO updatePost(Long id, PostDTO postDTO);
 
     void deletePost(Long id);
+
+    boolean existsById(Long id);
 }

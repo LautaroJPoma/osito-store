@@ -18,6 +18,6 @@ public interface OrderDetailService {
 
     void deleteOrderDetail(Long id);
 
-  
+    boolean existsById(Long id);
 
 }

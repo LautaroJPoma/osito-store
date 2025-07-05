@@ -88,4 +88,9 @@ public class ProductVariantServiceImpl implements ProductVariantService {
         }
         variantRepository.deleteById(id);
     }
+
+    @Override
+    public boolean existsById(Long id) {
+        return variantRepository.existsById(id);
+    }
 }
