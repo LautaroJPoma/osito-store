@@ -9,6 +9,7 @@ import com.lautaro.osito_store.dto.OrderDetailDTO;
 import com.lautaro.osito_store.entity.OrderDetail;
 import com.lautaro.osito_store.entity.ProductVariant;
 import com.lautaro.osito_store.entity.PurchaseOrder;
+import com.lautaro.osito_store.enums.PurchaseOrderStatus;
 import com.lautaro.osito_store.mapper.OrderDetailMapper;
 import com.lautaro.osito_store.repository.OrderDetailRepository;
 
@@ -40,6 +41,19 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         this.purchaseOrderService = purchaseOrderService;
     }
 
+    private void validateCanAddOrderDetail(PurchaseOrder purchaseOrder) {
+    PurchaseOrderStatus status = purchaseOrder.getStatus();
+
+    if (status == PurchaseOrderStatus.CONFIRMED) {
+        throw new IllegalStateException("No se pueden agregar productos a una orden confirmada.");
+    }
+
+    if (status == PurchaseOrderStatus.CANCELLED) {
+        throw new IllegalStateException("No se pueden agregar productos a una orden cancelada.");
+    }
+}
+
+
     @Transactional
     @Override
     public OrderDetailDTO createOrderDetail(OrderDetailDTO dto) {
@@ -51,36 +65,13 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 
         PurchaseOrder purchaseOrder = purchaseOrderRepository.findById(dto.getPurchaseOrderId())
                 .orElseThrow(() -> new RuntimeException("Orden de compra no encontrada"));
+        validateCanAddOrderDetail(purchaseOrder);
         orderDetail.setPurchaseOrder(purchaseOrder);
+      
 
         ProductVariant productVariant = productVariantRepository.findById(dto.getVariantId())
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
         orderDetail.setProductVariant(productVariant);
-
-        OrderDetail saved = orderDetailRepository.save(orderDetail);
-        purchaseOrder.getOrderDetail().add(saved);
-
-        purchaseOrderService.updateTotal(purchaseOrder);
-
-        return orderDetailMapper.toDTO(saved);
-    }
-
-    @Transactional
-    @Override
-    public OrderDetailDTO addOrderDetailToPurchaseOrder(Long purchaseOrderId, OrderDetailDTO dto) {
-        PurchaseOrder purchaseOrder = purchaseOrderRepository.findById(purchaseOrderId)
-                .orElseThrow(() -> new RuntimeException("Orden de compra no encontrada"));
-
-        OrderDetail orderDetail = orderDetailMapper.toEntity(dto);
-        orderDetail.setPurchaseOrder(purchaseOrder);
-
-        ProductVariant variant = productVariantRepository.findById(dto.getVariantId())
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
-        orderDetail.setProductVariant(variant);
-
-        if (orderDetail.getQuantity() == null) {
-            orderDetail.setQuantity(1);
-        }
 
         OrderDetail saved = orderDetailRepository.save(orderDetail);
         purchaseOrder.getOrderDetail().add(saved);

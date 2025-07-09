@@ -35,4 +35,17 @@ public class ProductVariantMapper {
 
         return variant;
     }
+
+    public ProductVariant toEntity(ProductVariantDTO dto, Product product) {
+    if (dto == null) return null;
+
+    ProductVariant variant = new ProductVariant();
+    variant.setId(dto.getId());
+    variant.setColor(dto.getColor());
+    variant.setSize(dto.getSize());
+    variant.setProduct(product);
+   
+    return variant;
+}
+
 }

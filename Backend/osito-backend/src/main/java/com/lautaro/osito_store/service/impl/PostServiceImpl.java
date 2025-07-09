@@ -2,47 +2,58 @@ package com.lautaro.osito_store.service.impl;
 
 import java.util.HashSet;
 import java.util.List;
+
 import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
 import com.lautaro.osito_store.dto.PostDTO;
+import com.lautaro.osito_store.dto.ProductVariantDTO;
+import com.lautaro.osito_store.entity.Category;
 import com.lautaro.osito_store.entity.Post;
 import com.lautaro.osito_store.entity.Product;
 import com.lautaro.osito_store.entity.ProductVariant;
 import com.lautaro.osito_store.entity.User;
 import com.lautaro.osito_store.enums.PostStatus;
 import com.lautaro.osito_store.mapper.PostMapper;
-import com.lautaro.osito_store.mapper.ProductMapper;
 import com.lautaro.osito_store.mapper.ProductVariantMapper;
+import com.lautaro.osito_store.repository.CategoryRepository;
 import com.lautaro.osito_store.repository.PostRepository;
 import com.lautaro.osito_store.repository.ProductRepository;
 import com.lautaro.osito_store.repository.ProductVariantRepository;
 import com.lautaro.osito_store.repository.UserRepository;
 import com.lautaro.osito_store.service.PostService;
+import com.lautaro.osito_store.service.ProductService;
+import com.lautaro.osito_store.service.ProductVariantService;
 
 import jakarta.transaction.Transactional;
 
 @Service
 public class PostServiceImpl implements PostService {
 
-    PostRepository postRepository;
-    PostMapper postMapper;
-    ProductRepository productRepository;
-    ProductVariantRepository productVariantRepository;
-    ProductVariantMapper productVariantMapper;
-    ProductMapper productMapper;
-    UserRepository userRepository;
+    private final PostRepository postRepository;
+    private final CategoryRepository categoryRepository;
+    private final PostMapper postMapper;
+    private final ProductRepository productRepository;
+    private final ProductService productService;
+    private final ProductVariantRepository productVariantRepository;
+    private final ProductVariantService productVariantService;
+    private final ProductVariantMapper variantMapper;
+    private final UserRepository userRepository;
 
     public PostServiceImpl(PostRepository postRepository, PostMapper postMapper, ProductRepository productRepository,
-            ProductVariantRepository productVariantRepository, ProductVariantMapper productVariantMapper,
-            ProductMapper productMapper, UserRepository userRepository) {
+            CategoryRepository categoryRepository,
+            ProductVariantRepository productVariantRepository,
+            ProductService productService, ProductVariantService productVariantService,
+            ProductVariantMapper variantMapper, UserRepository userRepository) {
         this.postRepository = postRepository;
         this.postMapper = postMapper;
         this.productRepository = productRepository;
+        this.categoryRepository = categoryRepository;
         this.productVariantRepository = productVariantRepository;
-        this.productVariantMapper = productVariantMapper;
-        this.productMapper = productMapper;
+        this.productService = productService;
+        this.productVariantService = productVariantService;
+        this.variantMapper = variantMapper;
         this.userRepository = userRepository;
     }
 
@@ -50,31 +61,30 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostDTO createPost(PostDTO postDTO) {
 
-        Product product = new Product();
-        product.setName(postDTO.getTitle());
-        product.setBrand("Desconocida");
-        product.setCategory(null);
-        product = productRepository.save(product);
+        Category category = null;
+        if (postDTO.getCategoryId() != null) {
+            category = categoryRepository.findById(postDTO.getCategoryId())
+                    .orElseThrow(() -> new RuntimeException("Categoria no encontrada"));
+        }
+
+        Product product = productService.createFromPostDTO(postDTO, category);
 
         User seller = userRepository.findById(postDTO.getSellerId())
                 .orElseThrow(() -> new RuntimeException("Vendedor no encontrado"));
 
         Set<ProductVariant> variants = new HashSet<>();
-        if (postDTO.getVariantIds() != null) {
-            for (Long variantId : postDTO.getVariantIds()) {
-                ProductVariant variant = productVariantRepository.findById(variantId)
-                        .orElseThrow(() -> new RuntimeException("Variante no encontrada: " + variantId));
-                variants.add(variant);
-            }
+        if (postDTO.getVariants() != null) {
+            variants = productVariantService.createAndLinkToProduct(postDTO.getVariants(), product);
         }
 
-        Post post = postMapper.toEntity(postDTO, product, seller, variants);
+        Post post = postMapper.toEntity(postDTO, product, category, seller, variants);
         Post savedPost = postRepository.save(post);
 
-        for (ProductVariant variant : variants) {
+        variants.forEach(variant -> {
             variant.setPost(savedPost);
             productVariantRepository.save(variant);
-        }
+        });
+
         return postMapper.toDTO(savedPost);
     }
 
@@ -98,17 +108,62 @@ public class PostServiceImpl implements PostService {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Post no encontrado"));
 
-        post.setTitle(postDTO.getTitle());
-        post.setDescription(postDTO.getDescription());
-        post.setPrice(postDTO.getPrice());
-        post.setStock(postDTO.getStock());
-        post.setImageUrls(postDTO.getImageUrls());
-        post.setStatus(PostStatus.valueOf(postDTO.getStatus()));
+        if (postDTO.getCategoryId() != null) {
+            Category category = categoryRepository.findById(postDTO.getCategoryId())
+                    .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
+            post.setCategory(category);
 
-        post = postRepository.save(post);
+            if (post.getProduct() != null) {
+                post.getProduct().setCategory(category);
+                productRepository.save(post.getProduct());
+            }
+        }
+        // Manejo de variantes
+        if ( postDTO.getVariants() != null) {
+            // Primero desvincular las variantes antiguas
+            for (ProductVariant oldVariant : post.getVariants()) {
+                oldVariant.setPost(null);
+                productVariantRepository.save(oldVariant);
+            }
+            post.getVariants().clear();
+            postRepository.save(post); // Guardar cambios antes de añadir nuevas
 
-        return postMapper.toDTO(post);
+            Set<ProductVariant> newVariants = new HashSet<>();
 
+            // Procesar variantes como objetos completos
+           for (ProductVariantDTO variantDTO : postDTO.getVariants()) {
+            ProductVariant newVariant = variantMapper.toEntity(variantDTO, post.getProduct(), post);
+            newVariant = productVariantRepository.save(newVariant);
+            newVariants.add(newVariant);
+        }
+
+            // Asignar nuevas variantes al post
+            post.getVariants().addAll(newVariants);
+        }
+
+        // Actualizar campos normales
+        if (postDTO.getTitle() != null) {
+            post.setTitle(postDTO.getTitle());
+        }
+        if (postDTO.getDescription() != null) {
+            post.setDescription(postDTO.getDescription());
+        }
+        if (postDTO.getPrice() != null) {
+            post.setPrice(postDTO.getPrice());
+        }
+        if (postDTO.getStock() != null) {
+            post.setStock(postDTO.getStock());
+        }
+        if (postDTO.getImageUrls() != null) {
+            post.setImageUrls(postDTO.getImageUrls());
+        }
+        if (postDTO.getStatus() != null) {
+            post.setStatus(PostStatus.valueOf(postDTO.getStatus()));
+        }
+
+        Post updatedPost = postRepository.save(post);
+
+        return postMapper.toDTO(updatedPost);
     }
 
     @Override

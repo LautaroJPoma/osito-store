@@ -2,6 +2,8 @@ package com.lautaro.osito_store.dto;
 
 import java.util.List;
 
+import com.lautaro.osito_store.enums.PurchaseOrderStatus;
+
 public class PurchaseOrderDTO {
 
     private Long id;
@@ -11,6 +13,9 @@ public class PurchaseOrderDTO {
     private Long userId;
 
     private List<OrderDetailDTO> orderDetail;
+
+    private PurchaseOrderStatus status;
+
 
     public Long getId() {
         return id;
@@ -42,6 +47,14 @@ public class PurchaseOrderDTO {
 
     public void setOrderDetail(List<OrderDetailDTO> orderDetail) {
         this.orderDetail = orderDetail;
+    }
+
+    public PurchaseOrderStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(PurchaseOrderStatus status) {
+        this.status = status;
     }
 
     

@@ -2,6 +2,8 @@ package com.lautaro.osito_store.dto;
 
 import java.util.List;
 
+
+
 public class PostDTO {
 
     private Long id;
@@ -18,13 +20,14 @@ public class PostDTO {
 
     private Long productId;
 
+    private Long categoryId;
+
     private List<String> imageUrls;
 
     private Long sellerId;
 
-    private List<Long> variantIds;
+    private List<ProductVariantDTO> variants;
 
-    
 
     public String getTitle() {
         return title;
@@ -90,20 +93,28 @@ public class PostDTO {
         this.imageUrls = imageUrls;
     }
 
-    public List<Long> getVariantIds() {
-        return variantIds;
-    }
-
-    public void setVariantIds(List<Long> variantIds) {
-        this.variantIds = variantIds;
-    }
-
     public Long getSellerId() {
         return sellerId;
     }
 
     public void setSellerId(Long sellerId) {
         this.sellerId = sellerId;
+    }
+
+    public Long getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Long categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public List<ProductVariantDTO> getVariants() {
+        return variants;
+    }
+
+    public void setVariants(List<ProductVariantDTO> variants) {
+        this.variants = variants;
     }
 
     

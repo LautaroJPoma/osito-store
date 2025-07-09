@@ -1,6 +1,8 @@
 package com.lautaro.osito_store.service.impl;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -45,6 +47,18 @@ public class ProductVariantServiceImpl implements ProductVariantService {
         variant = variantRepository.save(variant);
 
         return variantMapper.toDTO(variant);
+    }
+
+    @Override
+    public Set<ProductVariant> createAndLinkToProduct(List<ProductVariantDTO> variantDTOs, Product product) {
+        Set<ProductVariant> variants = new HashSet<>();
+
+        for (ProductVariantDTO dto : variantDTOs) {
+            ProductVariant variant = variantMapper.toEntity(dto, product);
+            variants.add(variantRepository.save(variant));
+        }
+
+        return variants;
     }
 
     @Override

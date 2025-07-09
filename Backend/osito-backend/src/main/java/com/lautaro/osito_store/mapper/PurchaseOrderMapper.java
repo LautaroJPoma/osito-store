@@ -24,6 +24,7 @@ public class PurchaseOrderMapper {
     public PurchaseOrderDTO toDTO(PurchaseOrder purchaseOrder) {
         PurchaseOrderDTO purchaseOrderDto = new PurchaseOrderDTO();
         purchaseOrderDto.setId(purchaseOrder.getId());
+        purchaseOrderDto.setStatus(purchaseOrder.getStatus());
         purchaseOrderDto.setTotal(purchaseOrder.getTotal());
 
         if (purchaseOrder.getUser() != null) {
@@ -46,6 +47,7 @@ public class PurchaseOrderMapper {
     public PurchaseOrder toEntity(PurchaseOrderDTO purchaseOrderDto, User user) {
         PurchaseOrder purchaseOrder = new PurchaseOrder();
         purchaseOrder.setId(purchaseOrderDto.getId());
+        purchaseOrder.setStatus(purchaseOrderDto.getStatus());
         purchaseOrder.setTotal(purchaseOrderDto.getTotal());
         purchaseOrder.setUser(user);
 

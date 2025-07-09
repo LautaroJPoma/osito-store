@@ -4,6 +4,8 @@ package com.lautaro.osito_store.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
 import com.lautaro.osito_store.dto.CartDTO;
 import com.lautaro.osito_store.entity.Cart;
 import com.lautaro.osito_store.entity.Post;
@@ -16,6 +18,7 @@ import com.lautaro.osito_store.service.CartService;
 
 import jakarta.transaction.Transactional;
 
+@Service
 public class CartServiceImpl implements CartService {
 
     private final CartRepository cartRepository;

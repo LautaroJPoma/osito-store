@@ -2,7 +2,11 @@ package com.lautaro.osito_store.entity;
 
 import java.util.List;
 
+import com.lautaro.osito_store.enums.PurchaseOrderStatus;
+
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -25,6 +29,9 @@ public class PurchaseOrder {
 
     @OneToMany(mappedBy = "purchaseOrder")
     private List<OrderDetail> orderDetail;
+
+    @Enumerated(EnumType.STRING)
+    private PurchaseOrderStatus status;
 
     public Long getId() {
         return id;
@@ -56,6 +63,14 @@ public class PurchaseOrder {
 
     public void setOrderDetail(List<OrderDetail> orderDetail) {
         this.orderDetail = orderDetail;
+    }
+
+    public PurchaseOrderStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(PurchaseOrderStatus status) {
+        this.status = status;
     }
 
     

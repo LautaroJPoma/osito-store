@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.lautaro.osito_store.dto.PostDTO;
 import com.lautaro.osito_store.dto.ProductDTO;
 import com.lautaro.osito_store.entity.Product;
 import com.lautaro.osito_store.entity.ProductVariant;
@@ -42,6 +43,17 @@ public class ProductServiceImpl implements ProductService {
 
         return productMapper.toDTO(saved);
     }
+
+    @Override
+    public Product createFromPostDTO(PostDTO postDTO, Category category) {
+        Product product = new Product();
+        product.setName(postDTO.getTitle());
+        product.setBrand("Desconocida");
+        product.setCategory(category);
+        return productRepository.save(product);
+    }
+
+        
 
     @Override
     public ProductDTO getProductById(Long id) {

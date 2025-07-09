@@ -10,6 +10,9 @@ public class ProductVariantDTO {
 
 
 
+    public ProductVariantDTO() {
+    }
+
     public Long getProductId() {
         return productId;
     }
