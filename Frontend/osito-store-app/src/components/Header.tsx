@@ -4,7 +4,7 @@ import { IconShoppingCart, IconUser, IconHeart } from "@tabler/icons-react";
 
 export const Header = () => {
   return (
-    <header className="bg-blue-400 shadow-md py-4">
+    <header className="bg-blue-400 d py-4">
       <div className="container mx-auto flex flex-col gap-4">
         <div className="flex items-center justify-between flex-wrap gap-4">
           <Link to="/" className="flex items-center space-x-3 flex-shrink-0">
