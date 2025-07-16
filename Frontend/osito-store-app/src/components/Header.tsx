@@ -33,25 +33,35 @@ export const Header = () => {
           </div>
 
           <div className="flex items-center gap-4">
-            <div className="group flex items-center overflow-hidden cursor-pointer">
-              <IconHeart className="h-8 w-8 text-gray-800 transition-all duration-300" />
-              <span className="ml-2 max-w-0 opacity-0 group-hover:max-w-[200px] group-hover:opacity-100 transition-all duration-300 text-m text-gray-800 whitespace-nowrap">
-                Favoritos
-              </span>
-            </div>
-            <div className="group flex items-center overflow-hidden cursor-pointer">
-              <IconUser className="h-8 w-8 text-gray-800 transition-all duration-300" />
-              <span className="ml-2 max-w-0 opacity-0 group-hover:max-w-[200px] group-hover:opacity-100 transition-all duration-300 text-m text-gray-800 whitespace-nowrap">
-                Iniciar sesión
-              </span>
-            </div>
+            <Link to="/favorites">
+              <div className="group flex items-center overflow-hidden cursor-pointer">
+                <IconHeart className="h-8 w-8 text-gray-800 transition-all duration-300" />
 
-            <div className="group flex items-center overflow-hidden cursor-pointer">
-              <IconShoppingCart className="h-8 w-8 text-gray-800 transition-all duration-300" />
-              <span className="ml-2 max-w-0 opacity-0 group-hover:max-w-[200px] group-hover:opacity-100 transition-all duration-300 text-m text-gray-800 whitespace-nowrap">
-                Carrito
-              </span>
-            </div>
+                <span className="ml-2 max-w-0 opacity-0 group-hover:max-w-[200px] group-hover:opacity-100 transition-all duration-300 text-m text-gray-800 whitespace-nowrap">
+                  Favoritos
+                </span>
+              </div>
+            </Link>
+
+            <Link to="/login">
+              <div className="group flex items-center overflow-hidden cursor-pointer">
+                <IconUser className="h-8 w-8 text-gray-800 transition-all duration-300" />
+
+                <span className="ml-2 max-w-0 opacity-0 group-hover:max-w-[200px] group-hover:opacity-100 transition-all duration-300 text-m text-gray-800 whitespace-nowrap">
+                  Iniciar sesión
+                </span>
+              </div>
+            </Link>
+
+            <Link to="/cart">
+              <div className="group flex items-center overflow-hidden cursor-pointer">
+                <IconShoppingCart className="h-8 w-8 text-gray-800 transition-all duration-300" />
+
+                <span className="ml-2 max-w-0 opacity-0 group-hover:max-w-[200px] group-hover:opacity-100 transition-all duration-300 text-m text-gray-800 whitespace-nowrap">
+                  Carrito
+                </span>
+              </div>
+            </Link>
           </div>
         </div>
       </div>

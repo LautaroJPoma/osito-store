@@ -19,8 +19,7 @@ export default function AppRouter(){
             <Routes>
                 <Route element={<Layout/>}>
                     <Route path='/' element={<IndexPage/>}/>
-                    <Route path='/login' element={<LoginPage/>}/>
-                    <Route path='/register' element={<RegisterPage/>} />
+                   
                     <Route path='/tendencies' element={<TendenciesPage/>} />
                     <Route path='/categories' element={<CategoriesPage/>} />
                     <Route path='/favorites' element={<FavoritesPage/>} />
@@ -29,6 +28,8 @@ export default function AppRouter(){
                     <Route path='/news' element={<NewsPage/>} />
                     <Route path='/offers' element={<OffersPage/>} />
                 </Route>
+                <Route path='/login' element={<LoginPage/>}/>
+                <Route path='/register' element={<RegisterPage/>} />
             </Routes>
         
         </BrowserRouter>
