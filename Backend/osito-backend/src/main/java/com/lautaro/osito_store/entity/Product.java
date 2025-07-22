@@ -7,6 +7,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 
@@ -25,6 +26,7 @@ public class Product {
     private List<ProductVariant> variants = new ArrayList<>();
 
     @ManyToOne
+    @JoinColumn(name = "category_id")
     private Category category;
 
     public Product() {}

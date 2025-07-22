@@ -1,6 +1,74 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { registerUser } from "../services/Api";
 
 export default function RegisterPage() {
+const [formData, setFormData] = useState({
+  name: "",
+  email: "",
+  password: "",
+  confirmPassword: "",
+});
+
+const [error, setError] = useState<string | null>(null);
+const [loading, setLoading] = useState(false);
+const navigate = useNavigate();
+
+const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const { id, value} = e.target;
+  setFormData(prev => ({
+    ...prev,
+    [id]: value,
+  }));
+  if (error) setError(null);
+};
+
+const validateForm = () => {
+  if (!formData.name.trim()) {
+    setError('El nombre es requerido');
+    return false;
+  }
+  if (!formData.email.includes('@')) {
+    setError('Ingrese un email válido');
+    return false;
+  }
+  if (formData.password.length < 6) {
+    setError('La contraseña debe tener al menos 6 caracteres');
+    return false;
+  }
+  if (formData.password !== formData.confirmPassword) {
+    setError('Las contraseñas no coinciden');
+    return false;
+  }
+  return true;
+};
+
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  
+  if (!validateForm()) return;
+  
+  try {
+    setLoading(true);
+    await registerUser({
+      name: formData.name,
+      email: formData.email,
+      password: formData.password
+    });
+    
+    navigate('/login');
+  } catch (err) {
+    setError(
+      err instanceof Error ? err.message : 'Error al registrar usuario'
+    );
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+
+  
   return (
     <div className="min-h-screen bg-blue-400 flex items-center justify-center">
       <div className="w-full max-w-2xl bg-white shadow-lg rounded-2xl p-12">
@@ -8,8 +76,13 @@ export default function RegisterPage() {
           <img src="/logo.png" alt="Logo" className="w-40 h-40 mx-auto" />
         </Link>
         <h1 className="font-black text-4xl text-center mb-10">Registrate</h1>
+        {error && (
+          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">
+            {error}
+          </div>
+        )}
 
-        <form className="space-y-6">
+        <form className="space-y-6" onSubmit={handleSubmit}>
           <div>
             <label htmlFor="name" className="text-lg font-semibold block mb-2">
               Nombre Completo
@@ -18,7 +91,10 @@ export default function RegisterPage() {
               className="w-full p-4 border border-gray-300 rounded text-lg"
               type="text"
               id="name"
+              value={formData.name}
+              onChange={handleChange}
               placeholder="Escriba su nombre completo"
+              required
             />
           </div>
 
@@ -30,7 +106,10 @@ export default function RegisterPage() {
               className="w-full p-4 border border-gray-300 rounded text-lg"
               type="email"
               id="email"
+              value={formData.email}
+              onChange={handleChange}
               placeholder="Escriba su email"
+              required
             />
           </div>
 
@@ -45,7 +124,10 @@ export default function RegisterPage() {
               className="w-full p-4 border border-gray-300 rounded text-lg"
               type="password"
               id="password"
+              value={formData.password}
+              onChange={handleChange}
               placeholder="Escriba su contraseña"
+              required
             />
           </div>
 
@@ -58,17 +140,21 @@ export default function RegisterPage() {
             </label>
             <input
               className="w-full p-4 border border-gray-300 rounded text-lg"
-              type="confirmPassword"
+              type="password"
               id="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleChange}
               placeholder="Escriba su contraseña"
+              required
             />
           </div>
 
           <button
             type="submit"
             className="w-full bg-black text-white py-4 rounded-lg text-lg hover:bg-gray-800 transition"
+            disabled={loading}
           >
-            Crear Cuenta
+            {loading ? "Creando cuenta..." : "Crear Cuenta"}
           </button>
 
           <p className="text-center text-gray-600">

@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,14 +16,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.lautaro.osito_store.dto.PostDTO;
+import com.lautaro.osito_store.service.CategoryService;
 import com.lautaro.osito_store.service.PostService;
+
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/posts")
+@CrossOrigin(origins = "http://localhost:5173")
 public class PostController {
 
     @Autowired
     private PostService postService;
+
+    @Autowired
+    private CategoryService categoryService;
 
     @GetMapping
     public ResponseEntity<List<PostDTO>> getAllPosts() {
@@ -39,17 +48,27 @@ public class PostController {
         return ResponseEntity.ok(post);
     }
 
-    @PostMapping
-    public ResponseEntity<PostDTO> createPost(@RequestBody PostDTO postDTO) {
-        if (postDTO.getTitle() == null || postDTO.getTitle().isEmpty()) {
-            throw new RuntimeException("El título no puede estar vacío");
-        }
-        if (postDTO.getDescription() == null || postDTO.getDescription().isEmpty()) {
-            throw new RuntimeException("La descripción no puede estar vacía");
-        }
+   @PostMapping
+    public ResponseEntity<?> createPost(@Valid @RequestBody PostDTO postDTO) {
+        try {
+           
+            if (postDTO.getCategoryId() == null || !categoryService.existsById(postDTO.getCategoryId())) {
+                return ResponseEntity.badRequest().body(
+                    postDTO.getCategoryId() == null ? 
+                    "Se requiere ID de categoría" : 
+                    "Categoría no encontrada con ID: " + postDTO.getCategoryId()
+                );
+            }
 
-        PostDTO newPost = postService.createPost(postDTO);
-        return new ResponseEntity<>(newPost, HttpStatus.CREATED);
+            PostDTO newPost = postService.createPost(postDTO);
+            return new ResponseEntity<>(newPost, HttpStatus.CREATED);
+            
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                .body("Error interno: " + e.getMessage());
+        }
     }
 
     @PutMapping("/{id}")

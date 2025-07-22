@@ -2,6 +2,7 @@ package com.lautaro.osito_store.service.impl;
 
 import java.util.List;
 
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import com.lautaro.osito_store.dto.OrderDetailDTO;
@@ -37,7 +38,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
     public PurchaseOrderServiceImpl(PurchaseOrderRepository purchaseOrderRepository,
             PurchaseOrderMapper purchaseOrderMapper,
             UserRepository userRepository,
-            OrderDetailService orderDetailService,
+            @Lazy  OrderDetailService orderDetailService,
             CartRepository cartRepository,
             CartItemRepository cartItemRepository,
             OrderDetailRepository orderDetailRepository) {

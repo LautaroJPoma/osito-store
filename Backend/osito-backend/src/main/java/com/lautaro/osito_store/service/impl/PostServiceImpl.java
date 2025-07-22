@@ -2,7 +2,7 @@ package com.lautaro.osito_store.service.impl;
 
 import java.util.HashSet;
 import java.util.List;
-
+import java.util.Objects;
 import java.util.Set;
 
 import org.springframework.stereotype.Service;
@@ -29,6 +29,7 @@ import com.lautaro.osito_store.service.ProductVariantService;
 import jakarta.transaction.Transactional;
 
 @Service
+@Transactional
 public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
@@ -61,25 +62,37 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostDTO createPost(PostDTO postDTO) {
 
-        Category category = null;
-        if (postDTO.getCategoryId() != null) {
-            category = categoryRepository.findById(postDTO.getCategoryId())
-                    .orElseThrow(() -> new RuntimeException("Categoria no encontrada"));
-        }
+        Objects.requireNonNull(postDTO.getCategoryId(), "Category ID no puede ser null");
+        
+        Category category = categoryRepository.findById(postDTO.getCategoryId())
+                .orElseThrow(() -> new RuntimeException("Categoría no encontrada con ID: " + postDTO.getCategoryId()));
 
+        
+        //User seller = userRepository.findById(postDTO.getSellerId())
+               // .orElseThrow(() -> new RuntimeException("Vendedor no encontrado con ID: " + postDTO.getSellerId()));
+        User seller;
+    if (postDTO.getSellerId() != null) {
+        seller = userRepository.findById(postDTO.getSellerId())
+                .orElseThrow(() -> new RuntimeException("Vendedor no encontrado con ID: " + postDTO.getSellerId()));
+    } else {
+        Long defaultSellerId = 1L; 
+        seller = userRepository.findById(defaultSellerId)
+                .orElseThrow(() -> new RuntimeException("Seller default no encontrado"));
+    }
+
+        
         Product product = productService.createFromPostDTO(postDTO, category);
 
-        User seller = userRepository.findById(postDTO.getSellerId())
-                .orElseThrow(() -> new RuntimeException("Vendedor no encontrado"));
+       
+        Set<ProductVariant> variants = postDTO.getVariants() != null
+                ? productVariantService.createAndLinkToProduct(postDTO.getVariants(), product)
+                : new HashSet<>();
 
-        Set<ProductVariant> variants = new HashSet<>();
-        if (postDTO.getVariants() != null) {
-            variants = productVariantService.createAndLinkToProduct(postDTO.getVariants(), product);
-        }
-
+        
         Post post = postMapper.toEntity(postDTO, product, category, seller, variants);
         Post savedPost = postRepository.save(post);
 
+        
         variants.forEach(variant -> {
             variant.setPost(savedPost);
             productVariantRepository.save(variant);
@@ -119,7 +132,7 @@ public class PostServiceImpl implements PostService {
             }
         }
         // Manejo de variantes
-        if ( postDTO.getVariants() != null) {
+        if (postDTO.getVariants() != null) {
             // Primero desvincular las variantes antiguas
             for (ProductVariant oldVariant : post.getVariants()) {
                 oldVariant.setPost(null);
@@ -131,11 +144,11 @@ public class PostServiceImpl implements PostService {
             Set<ProductVariant> newVariants = new HashSet<>();
 
             // Procesar variantes como objetos completos
-           for (ProductVariantDTO variantDTO : postDTO.getVariants()) {
-            ProductVariant newVariant = variantMapper.toEntity(variantDTO, post.getProduct(), post);
-            newVariant = productVariantRepository.save(newVariant);
-            newVariants.add(newVariant);
-        }
+            for (ProductVariantDTO variantDTO : postDTO.getVariants()) {
+                ProductVariant newVariant = variantMapper.toEntity(variantDTO, post.getProduct(), post);
+                newVariant = productVariantRepository.save(newVariant);
+                newVariants.add(newVariant);
+            }
 
             // Asignar nuevas variantes al post
             post.getVariants().addAll(newVariants);
