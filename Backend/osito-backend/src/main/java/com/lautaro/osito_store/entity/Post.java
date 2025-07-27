@@ -9,6 +9,7 @@ import java.util.Set;
 import com.lautaro.osito_store.enums.PostStatus;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -30,6 +31,7 @@ public class Post {
 
     private String title;
 
+    @Column(columnDefinition = "TEXT")
     private String description;
 
     private Double price;

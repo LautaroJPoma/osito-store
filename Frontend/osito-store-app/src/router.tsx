@@ -11,6 +11,7 @@ import HelpPage from "./pages/HelpPage";
 import NewsPage from "./pages/NewsPage";
 import OffersPage from "./pages/OffersPage";
 import CreatePostPage from "./pages/CreatePostPage";
+import PostPage from "./pages/PostPage";
 
 
 export default function AppRouter(){
@@ -28,7 +29,9 @@ export default function AppRouter(){
                     <Route path='/help' element={<HelpPage/>} />
                     <Route path='/news' element={<NewsPage/>} />
                     <Route path='/offers' element={<OffersPage/>} />
+                    <Route path='/posts/:id' element={<PostPage/>} />
                 </Route>
+                
                 <Route path='/create-post' element={<CreatePostPage/>} />
                 <Route path='/login' element={<LoginPage/>}/>
                 <Route path='/register' element={<RegisterPage/>} />

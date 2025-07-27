@@ -1,6 +1,9 @@
 import { Link, useNavigate } from "react-router-dom";
-import { createPost, getCategories, type Category, type Post } from "../services/Api";
+
 import { useEffect, useState } from "react";
+import type { Category, Post } from "../types";
+import { getCategories } from "../api/categoryApi";
+import { createPost } from "../api/postApi";
 
 export default function CreatePostPage() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -145,6 +148,7 @@ export default function CreatePostPage() {
             </label>
             <textarea
               id="description"
+              rows={8}
               className="w-full p-4 border border-gray-300 rounded text-lg"
               placeholder="Ingrese la descripción del producto"
               onChange={handleInputChange}

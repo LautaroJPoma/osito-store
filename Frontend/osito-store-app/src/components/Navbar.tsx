@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { Listbox } from "@headlessui/react";
 import { Link, useNavigate } from "react-router-dom";
-import { getCategories, type Category } from "../services/Api"; // ajustá el path si es necesario
+import { getCategories } from "../api/categoryApi";
+import type { Category } from "../types";
+
 
 export default function NavBar() {
   const [categories, setCategories] = useState<Category[]>([]);
