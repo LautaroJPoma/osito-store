@@ -14,13 +14,10 @@ const [error, setError] = useState<string | null>(null);
 const [loading, setLoading] = useState(false);
 const navigate = useNavigate();
 
+
 const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  const { id, value} = e.target;
-  setFormData(prev => ({
-    ...prev,
-    [id]: value,
-  }));
-  if (error) setError(null);
+  const { id, value } = e.target;
+  setFormData((prev) => ({ ...prev, [id]: value }));
 };
 
 const validateForm = () => {
@@ -50,13 +47,16 @@ const handleSubmit = async (e: React.FormEvent) => {
   
   try {
     setLoading(true);
-    await registerUser({
+    setError(null);
+
+    const response = await registerUser({
       name: formData.name,
       email: formData.email,
-      password: formData.password
+      password: formData.password,
     });
     
-    navigate('/login');
+    localStorage.setItem("token", response.token);
+    navigate('/');
   } catch (err) {
     setError(
       err instanceof Error ? err.message : 'Error al registrar usuario'

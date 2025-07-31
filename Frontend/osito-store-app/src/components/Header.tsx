@@ -1,8 +1,20 @@
 import { Link } from "react-router-dom";
 import Navbar from "./Navbar";
 import { IconShoppingCart, IconUser, IconHeart } from "@tabler/icons-react";
+import {  useEffect, useState } from "react";
 
 export const Header = () => {
+const [userName, setUserName] = useState<string | null>(null);
+
+
+useEffect(() => {
+  // Leer el nombre del usuario al cargar el componente
+  const storedUserName = localStorage.getItem("username");
+  if (storedUserName) {
+    setUserName(storedUserName);
+  }
+}, []);
+
   return (
     <header className="bg-blue-400 d py-4">
       <div className="container mx-auto flex flex-col gap-4">
@@ -48,7 +60,7 @@ export const Header = () => {
                 <IconUser className="h-8 w-8 text-gray-800 transition-all duration-300" />
 
                 <span className="ml-2 max-w-0 opacity-0 group-hover:max-w-[200px] group-hover:opacity-100 transition-all duration-300 text-m text-gray-800 whitespace-nowrap">
-                  Iniciar sesión
+                {userName || "Iniciar sesión"}
                 </span>
               </div>
             </Link>

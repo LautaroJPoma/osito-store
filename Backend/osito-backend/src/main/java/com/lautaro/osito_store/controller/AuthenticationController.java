@@ -1,6 +1,7 @@
 package com.lautaro.osito_store.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,6 +12,7 @@ import com.lautaro.osito_store.dto.AuthenticationResponse;
 import com.lautaro.osito_store.dto.RegisterRequest;
 import com.lautaro.osito_store.service.AuthenticationService;
 
+@CrossOrigin(origins= "*")
 @RestController
 @RequestMapping("/api/auth")
 public class AuthenticationController {

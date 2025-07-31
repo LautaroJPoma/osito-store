@@ -18,3 +18,15 @@ export interface User {
     email: string;
     password: string;
 }
+
+export interface AuthenticationResponse {
+    token: string;
+    username: string;
+  }
+
+  export interface RegisterRequest {
+    name: string;
+    email: string;
+    password: string;
+  }
+  
