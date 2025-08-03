@@ -1,5 +1,9 @@
 package com.lautaro.osito_store.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -22,6 +26,9 @@ public class ProductVariant {
     @ManyToOne
     @JoinColumn(name = "post_id")
     private Post post;
+
+    @ElementCollection
+    private List<String> imageUrls = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -61,6 +68,14 @@ public class ProductVariant {
 
     public void setProduct(Product product) {
         this.product = product;
+    }
+
+    public List<String> getImageUrls() {
+        return imageUrls;
+    }
+
+    public void setImageUrls(List<String> imageUrls) {
+        this.imageUrls = imageUrls;
     }
 
 

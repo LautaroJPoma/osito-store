@@ -22,4 +22,6 @@ public interface ProductVariantService {
     void deleteProductVariant(Long id);
 
     boolean existsById(Long id);
+
+    ProductVariant addImage(Long variantId, String imageUrl);
 }

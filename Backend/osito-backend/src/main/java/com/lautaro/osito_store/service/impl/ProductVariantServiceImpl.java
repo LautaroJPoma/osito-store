@@ -107,4 +107,14 @@ public class ProductVariantServiceImpl implements ProductVariantService {
     public boolean existsById(Long id) {
         return variantRepository.existsById(id);
     }
+
+    @Override
+    public ProductVariant addImage(Long variantId, String imageUrl) {
+    ProductVariant variant = variantRepository.findById(variantId)
+        .orElseThrow(() -> new RuntimeException("Variante no encontrada"));
+
+    variant.getImageUrls().add(imageUrl);
+    return variantRepository.save(variant);
+}
+
 }

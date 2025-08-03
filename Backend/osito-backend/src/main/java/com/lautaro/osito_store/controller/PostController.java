@@ -1,5 +1,6 @@
 package com.lautaro.osito_store.controller;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,10 +14,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.lautaro.osito_store.dto.PostDTO;
+import com.lautaro.osito_store.entity.Post;
 import com.lautaro.osito_store.service.CategoryService;
+import com.lautaro.osito_store.service.CloudinaryService;
 import com.lautaro.osito_store.service.PostService;
 
 
@@ -32,6 +37,9 @@ public class PostController {
 
     @Autowired
     private CategoryService categoryService;
+
+    @Autowired
+    private CloudinaryService cloudinaryService;
 
     @GetMapping
     public ResponseEntity<List<PostDTO>> getAllPosts() {
@@ -89,5 +97,18 @@ public class PostController {
         postService.deletePost(id);
         return ResponseEntity.noContent().build();
     }
+
+   @PostMapping("/{id}/images")
+public ResponseEntity<Post> uploadPostImage(
+        @PathVariable Long id,
+        @RequestParam("file") MultipartFile file) {
+    try {
+        String imageUrl = cloudinaryService.uploadImage(file);
+        Post updatedPost = postService.addImage(id, imageUrl);
+        return ResponseEntity.ok(updatedPost);
+    } catch (IOException e) {
+        throw new RuntimeException("Error al subir la imagen a Cloudinary", e);
+    }
+}
 
 }

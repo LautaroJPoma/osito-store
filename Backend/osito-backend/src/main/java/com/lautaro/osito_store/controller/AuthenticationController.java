@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.lautaro.osito_store.dto.AuthenticationRequest;
 import com.lautaro.osito_store.dto.AuthenticationResponse;
+import com.lautaro.osito_store.dto.ChangePasswordRequest;
 import com.lautaro.osito_store.dto.RegisterRequest;
 import com.lautaro.osito_store.service.AuthenticationService;
 
@@ -36,4 +37,11 @@ public class AuthenticationController {
     ) {
         return ResponseEntity.ok(authenticationService.authenticate(request));
     }
+
+    @PostMapping("/change-password")
+public ResponseEntity<String> changePassword(@RequestBody ChangePasswordRequest request) {
+    authenticationService.changePassword(request);
+    return ResponseEntity.ok("Contraseña cambiada con éxito");
+}
+
 }

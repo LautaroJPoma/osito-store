@@ -1,4 +1,4 @@
-package com.lautaro.osito_store.security;
+package com.lautaro.osito_store.service;
 
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;

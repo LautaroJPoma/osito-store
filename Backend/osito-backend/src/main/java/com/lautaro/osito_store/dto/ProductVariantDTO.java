@@ -1,14 +1,16 @@
 package com.lautaro.osito_store.dto;
 
+import java.util.List;
+
 public class ProductVariantDTO {
     private Long id;
     private String color;
     private String size;
-    
+
     private Long productId;
     private Long postId;
 
-
+    private List<String> imageUrls;
 
     public ProductVariantDTO() {
     }
@@ -51,6 +53,14 @@ public class ProductVariantDTO {
 
     public void setSize(String size) {
         this.size = size;
+    }
+
+    public List<String> getImageUrls() {
+        return imageUrls;
+    }
+
+    public void setImageUrls(List<String> imageUrls) {
+        this.imageUrls = imageUrls;
     }
 
 }

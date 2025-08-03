@@ -191,4 +191,14 @@ public class PostServiceImpl implements PostService {
         return postRepository.existsById(id);
     }
 
+    @Override
+    public Post addImage(Long id, String imageUrl) {
+    Post post = postRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("Post no encontrado"));
+
+    post.getImageUrls().add(imageUrl);
+    return postRepository.save(post);
+}
+
+
 }

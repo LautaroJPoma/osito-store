@@ -3,6 +3,7 @@ package com.lautaro.osito_store.service;
 import java.util.List;
 
 import com.lautaro.osito_store.dto.PostDTO;
+import com.lautaro.osito_store.entity.Post;
 
 public interface PostService {
     
@@ -17,4 +18,6 @@ public interface PostService {
     void deletePost(Long id);
 
     boolean existsById(Long id);
+
+    Post addImage(Long id, String imageUrl);
 }

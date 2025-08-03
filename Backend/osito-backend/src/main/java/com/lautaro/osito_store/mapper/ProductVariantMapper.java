@@ -19,6 +19,7 @@ public class ProductVariantMapper {
         dto.setSize(variant.getSize());
         dto.setProductId(variant.getProduct() != null ? variant.getProduct().getId() : null);
         dto.setPostId(variant.getPost() != null ? variant.getPost().getId() : null);
+        dto.setImageUrls(variant.getImageUrls());
 
         return dto;
     }
@@ -44,6 +45,7 @@ public class ProductVariantMapper {
     variant.setColor(dto.getColor());
     variant.setSize(dto.getSize());
     variant.setProduct(product);
+    variant.setImageUrls(dto.getImageUrls());
    
     return variant;
 }

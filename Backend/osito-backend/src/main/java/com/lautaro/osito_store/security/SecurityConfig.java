@@ -49,12 +49,15 @@ public class SecurityConfig {
                                 "/api/auth/**",
                                 "/api/products",
                                 "/api/products/{id}",
-                                "/api/products/variants",
-                                "/api/products/variants/{id}",
+                                "/api/variants",
+                                "/api/variants/{id}",
+                                "/api/variants/{id}/images",
                                 "/api/categories",
                                 "/api/categories/{id}",
                                 "/api/posts",
-                                "/api/posts/{id}"
+                                "/api/posts/{id}",
+                                "/api/posts/{id}/images",
+                                "/api/images/upload"
                             ).permitAll()
                             
                             // Categorías (solo admin puede modificar)
@@ -71,6 +74,7 @@ public class SecurityConfig {
                             .requestMatchers("/api/cart-items/**").hasRole("USER")
                             .requestMatchers("/api/order-details/**").hasRole("USER")
                             .requestMatchers("/api/purchase-orders/**").hasRole("USER")
+                            
                             
                             // Usuarios
                             .requestMatchers(HttpMethod.GET, "/api/users/me").authenticated()

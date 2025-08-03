@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.lautaro.osito_store.dto.AuthenticationRequest;
 import com.lautaro.osito_store.dto.AuthenticationResponse;
+import com.lautaro.osito_store.dto.ChangePasswordRequest;
 import com.lautaro.osito_store.dto.RegisterRequest;
 import com.lautaro.osito_store.entity.User;
 import com.lautaro.osito_store.enums.Role;
@@ -25,11 +26,13 @@ public class AuthenticationService {
             PasswordEncoder passwordEncoder,
             JwtService jwtService,
             AuthenticationManager authenticationManager
+
     ) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.authenticationManager = authenticationManager;
+
     }
 
     public AuthenticationResponse register(RegisterRequest request) {
@@ -38,9 +41,9 @@ public class AuthenticationService {
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(Role.USER);
-        
+
         userRepository.save(user);
-        
+
         String jwtToken = jwtService.generateToken(user);
         AuthenticationResponse response = new AuthenticationResponse();
         response.setToken(jwtToken);
@@ -51,13 +54,11 @@ public class AuthenticationService {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
-                        request.getPassword()
-                )
-        );
-        
+                        request.getPassword()));
+
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow();
-        
+
         String jwtToken = jwtService.generateToken(user);
         AuthenticationResponse response = new AuthenticationResponse();
         response.setToken(jwtToken);
@@ -65,4 +66,17 @@ public class AuthenticationService {
         response.setEmail(user.getEmail());
         return response;
     }
+
+    public void changePassword(ChangePasswordRequest changePasswordRequest) {
+        User user = userRepository.findByEmail(changePasswordRequest.getEmail())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        if (!passwordEncoder.matches(changePasswordRequest.getOldPassword(), user.getPassword())) {
+            throw new RuntimeException("La contraseña actual no es correcta");
+        }
+
+        user.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
+        userRepository.save(user);
+    }
+
 }
