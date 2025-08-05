@@ -14,6 +14,7 @@ export default function LoginPage() {
       
       // Guardar token y username en localStorage
       localStorage.setItem("token", response.token);
+      localStorage.setItem("email", response.email);
       localStorage.setItem("username", response.username);
       navigate("/");
     } catch (error) {

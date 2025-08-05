@@ -1,4 +1,4 @@
-import type { AuthenticationResponse, RegisterRequest } from "../types";
+import type { AuthenticationResponse, ChangePasswordRequest, RegisterRequest } from "../types";
 import { api } from "./axios";
 
 export const registerUser = async (userData: RegisterRequest): Promise<AuthenticationResponse> => {
@@ -21,3 +21,12 @@ export const loginUser = async (loginData: { email: string, password: string }):
     }
   };
   
+  export const changePassword = async (data: ChangePasswordRequest) => {
+    try {
+      const response = await api.post<AuthenticationResponse>("/auth/change-password", data);
+      return response.data;
+    } catch (error) {
+      console.error("Error al cambiar la contraseña", error);
+      throw error;
+    }
+  };

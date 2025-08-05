@@ -12,7 +12,7 @@ export default function NavBar() {
 
   const handleChange = (value: string) => {
     setSelected(value);
-    navigate(`/category/${value}`); // Redirige a la categoría
+    navigate(`/category/${value}`); 
   };
 
   useEffect(() => {

@@ -14,19 +14,37 @@ export interface Post {
 
 export interface User {
     id?: number;
-    name: string;
+    username: string;
     email: string;
     password: string;
+}
+
+export interface UserProfileData {
+  username: string;
+  email: string;
 }
 
 export interface AuthenticationResponse {
     token: string;
     username: string;
+    email: string;
   }
 
   export interface RegisterRequest {
     name: string;
     email: string;
     password: string;
+  }
+
+  export interface ChangePasswordRequest {
+    email: string;
+    oldPassword: string;
+    newPassword: string;
+  }
+
+  export type Tab = {
+    id: string,
+    label: string;
+    icon?: React.ReactNode;
   }
   

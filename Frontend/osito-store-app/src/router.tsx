@@ -12,6 +12,8 @@ import NewsPage from "./pages/NewsPage";
 import OffersPage from "./pages/OffersPage";
 import CreatePostPage from "./pages/CreatePostPage";
 import PostPage from "./pages/PostPage";
+import ChangePasswordPage from "./pages/ChangePasswordPage";
+import ProfilePage from "./pages/ProfilePage";
 
 
 export default function AppRouter(){
@@ -30,11 +32,13 @@ export default function AppRouter(){
                     <Route path='/news' element={<NewsPage/>} />
                     <Route path='/offers' element={<OffersPage/>} />
                     <Route path='/posts/:id' element={<PostPage/>} />
+                    <Route path='/profile' element={<ProfilePage/>}/>
                 </Route>
                 
                 <Route path='/create-post' element={<CreatePostPage/>} />
                 <Route path='/login' element={<LoginPage/>}/>
                 <Route path='/register' element={<RegisterPage/>} />
+                <Route path='/change-password' element={<ChangePasswordPage/>} />
             </Routes>
         
         </BrowserRouter>

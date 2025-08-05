@@ -44,6 +44,8 @@ public class SecurityConfig {
                 public void customize(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry auth) {
                     try {
                         auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
                             // Endpoints públicos
                             .requestMatchers(
                                 "/api/auth/**",
@@ -69,11 +71,13 @@ public class SecurityConfig {
                             .requestMatchers(HttpMethod.PUT, "/api/posts/**").authenticated()
                             .requestMatchers(HttpMethod.DELETE, "/api/posts/**").authenticated()
                             
+                            
                             // Carrito y órdenes (solo usuarios autenticados)
                             .requestMatchers("/api/cart/**").hasRole("USER")
                             .requestMatchers("/api/cart-items/**").hasRole("USER")
                             .requestMatchers("/api/order-details/**").hasRole("USER")
                             .requestMatchers("/api/purchase-orders/**").hasRole("USER")
+                            .requestMatchers("/api/auth/change-password").hasRole("USER")
                             
                             
                             // Usuarios
