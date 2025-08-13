@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,9 +21,12 @@ import org.springframework.web.multipart.MultipartFile;
 import com.lautaro.osito_store.dto.ProductVariantDTO;
 
 import com.lautaro.osito_store.entity.ProductVariant;
+import com.lautaro.osito_store.mapper.ProductVariantMapper;
+import com.lautaro.osito_store.repository.ProductVariantRepository;
 import com.lautaro.osito_store.service.CloudinaryService;
 import com.lautaro.osito_store.service.ProductVariantService;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/variants")
 public class ProductVariantController {
@@ -33,6 +37,11 @@ public class ProductVariantController {
     @Autowired
     private CloudinaryService cloudinaryService;
 
+    @Autowired
+    private ProductVariantRepository productVariantRepository;
+
+    @Autowired
+    private ProductVariantMapper productVariantMapper;
 
     @GetMapping
     public ResponseEntity<List<ProductVariantDTO>> getAllVariants() {
@@ -53,6 +62,9 @@ public class ProductVariantController {
     public ResponseEntity<ProductVariantDTO> createVariant(@RequestBody ProductVariantDTO dto) {
         if (dto.getColor() == null || dto.getColor().isEmpty()) {
             throw new RuntimeException("El color no puede estar vacío");
+        }
+        if (dto.getColorHex() == null || dto.getColorHex().isEmpty()) {
+            throw new RuntimeException("El código hexadecimal del color no puede estar vacío");
         }
         if (dto.getSize() == null || dto.getSize().isEmpty()) {
             throw new RuntimeException("El tamaño no puede estar vacío");
@@ -81,17 +93,35 @@ public class ProductVariantController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{id}/images")
-    public ResponseEntity<ProductVariant> uploadVariantImage(
-            @PathVariable Long id,
-            @RequestParam("file") MultipartFile file) {
+   @PostMapping("/{id}/images")
+public ResponseEntity<ProductVariantDTO> uploadVariantImages(
+        @PathVariable Long id,
+        @RequestParam("files") List<MultipartFile> files) {
 
-        try {
-        String imageUrl = cloudinaryService.uploadImage(file);
-        ProductVariant updatedProductVariant = productVariantService.addImage(id, imageUrl);
-        return ResponseEntity.ok(updatedProductVariant);
+    try {
+      
+        ProductVariant variant = productVariantRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Variante no encontrada"));
+
+       
+        for (MultipartFile file : files) {
+            String imageUrl = cloudinaryService.uploadImage(file);
+            variant.getImageUrls().add(imageUrl);
+        }
+
+       
+        ProductVariant updatedVariant = productVariantRepository.save(variant);
+
+       
+       ProductVariantDTO dto = productVariantMapper.toDTO(updatedVariant);
+
+
+        return ResponseEntity.ok(dto);
+
     } catch (IOException e) {
-        throw new RuntimeException("Error al subir la imagen a Cloudinary", e);
+        throw new RuntimeException("Error al subir imágenes a Cloudinary", e);
     }
-    }
+}
+
+
 }

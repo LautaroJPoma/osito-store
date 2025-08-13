@@ -16,6 +16,7 @@ export default function LoginPage() {
       localStorage.setItem("token", response.token);
       localStorage.setItem("email", response.email);
       localStorage.setItem("username", response.username);
+      localStorage.setItem("userId", response.userId.toString());
       navigate("/");
     } catch (error) {
       console.error(error);

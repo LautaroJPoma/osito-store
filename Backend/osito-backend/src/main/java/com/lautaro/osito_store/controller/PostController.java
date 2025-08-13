@@ -1,6 +1,5 @@
 package com.lautaro.osito_store.controller;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,16 +13,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.lautaro.osito_store.dto.PostDTO;
-import com.lautaro.osito_store.entity.Post;
-import com.lautaro.osito_store.service.CategoryService;
-import com.lautaro.osito_store.service.CloudinaryService;
-import com.lautaro.osito_store.service.PostService;
 
+import com.lautaro.osito_store.service.CategoryService;
+
+import com.lautaro.osito_store.service.PostService;
 
 import jakarta.validation.Valid;
 
@@ -38,8 +35,7 @@ public class PostController {
     @Autowired
     private CategoryService categoryService;
 
-    @Autowired
-    private CloudinaryService cloudinaryService;
+  
 
     @GetMapping
     public ResponseEntity<List<PostDTO>> getAllPosts() {
@@ -56,26 +52,29 @@ public class PostController {
         return ResponseEntity.ok(post);
     }
 
-   @PostMapping
+  @GetMapping("/user/{sellerId}")
+public ResponseEntity<List<PostDTO>> getPostsBySeller(@PathVariable Long sellerId) {
+    return ResponseEntity.ok(postService.getPostsBySellerId(sellerId));
+}
+
+    @PostMapping
     public ResponseEntity<?> createPost(@Valid @RequestBody PostDTO postDTO) {
         try {
-           
+
             if (postDTO.getCategoryId() == null || !categoryService.existsById(postDTO.getCategoryId())) {
                 return ResponseEntity.badRequest().body(
-                    postDTO.getCategoryId() == null ? 
-                    "Se requiere ID de categoría" : 
-                    "Categoría no encontrada con ID: " + postDTO.getCategoryId()
-                );
+                        postDTO.getCategoryId() == null ? "Se requiere ID de categoría"
+                                : "Categoría no encontrada con ID: " + postDTO.getCategoryId());
             }
 
             PostDTO newPost = postService.createPost(postDTO);
             return new ResponseEntity<>(newPost, HttpStatus.CREATED);
-            
+
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.internalServerError()
-                .body("Error interno: " + e.getMessage());
+                    .body("Error interno: " + e.getMessage());
         }
     }
 
@@ -97,18 +96,5 @@ public class PostController {
         postService.deletePost(id);
         return ResponseEntity.noContent().build();
     }
-
-   @PostMapping("/{id}/images")
-public ResponseEntity<Post> uploadPostImage(
-        @PathVariable Long id,
-        @RequestParam("file") MultipartFile file) {
-    try {
-        String imageUrl = cloudinaryService.uploadImage(file);
-        Post updatedPost = postService.addImage(id, imageUrl);
-        return ResponseEntity.ok(updatedPost);
-    } catch (IOException e) {
-        throw new RuntimeException("Error al subir la imagen a Cloudinary", e);
-    }
-}
 
 }

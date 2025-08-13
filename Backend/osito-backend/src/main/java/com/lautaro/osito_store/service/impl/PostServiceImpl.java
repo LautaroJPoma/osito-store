@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -25,6 +26,7 @@ import com.lautaro.osito_store.repository.UserRepository;
 import com.lautaro.osito_store.service.PostService;
 import com.lautaro.osito_store.service.ProductService;
 import com.lautaro.osito_store.service.ProductVariantService;
+import com.lautaro.osito_store.service.StockService;
 
 import jakarta.transaction.Transactional;
 
@@ -41,12 +43,14 @@ public class PostServiceImpl implements PostService {
     private final ProductVariantService productVariantService;
     private final ProductVariantMapper variantMapper;
     private final UserRepository userRepository;
+    private final StockService stockService;
 
     public PostServiceImpl(PostRepository postRepository, PostMapper postMapper, ProductRepository productRepository,
             CategoryRepository categoryRepository,
             ProductVariantRepository productVariantRepository,
             ProductService productService, ProductVariantService productVariantService,
-            ProductVariantMapper variantMapper, UserRepository userRepository) {
+            ProductVariantMapper variantMapper, UserRepository userRepository,
+            StockService stockService) {
         this.postRepository = postRepository;
         this.postMapper = postMapper;
         this.productRepository = productRepository;
@@ -56,47 +60,41 @@ public class PostServiceImpl implements PostService {
         this.productVariantService = productVariantService;
         this.variantMapper = variantMapper;
         this.userRepository = userRepository;
+        this.stockService = stockService;
     }
 
     @Transactional
     @Override
     public PostDTO createPost(PostDTO postDTO) {
-
         Objects.requireNonNull(postDTO.getCategoryId(), "Category ID no puede ser null");
-        
+
         Category category = categoryRepository.findById(postDTO.getCategoryId())
                 .orElseThrow(() -> new RuntimeException("Categoría no encontrada con ID: " + postDTO.getCategoryId()));
 
-        
-        //User seller = userRepository.findById(postDTO.getSellerId())
-               // .orElseThrow(() -> new RuntimeException("Vendedor no encontrado con ID: " + postDTO.getSellerId()));
         User seller;
-    if (postDTO.getSellerId() != null) {
-        seller = userRepository.findById(postDTO.getSellerId())
-                .orElseThrow(() -> new RuntimeException("Vendedor no encontrado con ID: " + postDTO.getSellerId()));
-    } else {
-        Long defaultSellerId = 1L; 
-        seller = userRepository.findById(defaultSellerId)
-                .orElseThrow(() -> new RuntimeException("Seller default no encontrado"));
-    }
+        if (postDTO.getSellerId() != null) {
+            seller = userRepository.findById(postDTO.getSellerId())
+                    .orElseThrow(() -> new RuntimeException("Vendedor no encontrado con ID: " + postDTO.getSellerId()));
+        } else {
+            Long defaultSellerId = 1L;
+            seller = userRepository.findById(defaultSellerId)
+                    .orElseThrow(() -> new RuntimeException("Seller default no encontrado"));
+        }
 
-        
         Product product = productService.createFromPostDTO(postDTO, category);
 
-       
         Set<ProductVariant> variants = postDTO.getVariants() != null
                 ? productVariantService.createAndLinkToProduct(postDTO.getVariants(), product)
                 : new HashSet<>();
 
-        
         Post post = postMapper.toEntity(postDTO, product, category, seller, variants);
-        Post savedPost = postRepository.save(post);
 
-        
-        variants.forEach(variant -> {
-            variant.setPost(savedPost);
-            productVariantRepository.save(variant);
-        });
+        // Aquí vinculamos las variantes con el post
+        variants.forEach(variant -> variant.setPost(post));
+
+        Post savedPost = postRepository.save(post); 
+
+        stockService.updatePostStock(savedPost.getId());
 
         return postMapper.toDTO(savedPost);
     }
@@ -167,14 +165,13 @@ public class PostServiceImpl implements PostService {
         if (postDTO.getStock() != null) {
             post.setStock(postDTO.getStock());
         }
-        if (postDTO.getImageUrls() != null) {
-            post.setImageUrls(postDTO.getImageUrls());
-        }
+
         if (postDTO.getStatus() != null) {
             post.setStatus(PostStatus.valueOf(postDTO.getStatus()));
         }
 
         Post updatedPost = postRepository.save(post);
+        stockService.updatePostStock(updatedPost.getId());
 
         return postMapper.toDTO(updatedPost);
     }
@@ -192,13 +189,34 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Post addImage(Long id, String imageUrl) {
-    Post post = postRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("Post no encontrado"));
+    public List<PostDTO> getPostsBySellerId(Long sellerId) {
 
-    post.getImageUrls().add(imageUrl);
-    return postRepository.save(post);
-}
+        List<Post> posts = postRepository.getPostsBySellerId(sellerId);
+        return posts.stream().map(post -> {
+            PostDTO dto = new PostDTO();
+            dto.setId(post.getId());
+            dto.setTitle(post.getTitle());
+            dto.setDescription(post.getDescription());
+            dto.setPrice(post.getPrice());
+
+            // Mapea las variantes con sus DTOs existentes
+            dto.setVariants(post.getVariants().stream()
+                    .map(variant -> {
+                        ProductVariantDTO variantDto = new ProductVariantDTO();
+                        // Mapea todos los campos que ya tienes en ProductVariantDTO
+                        variantDto.setId(variant.getId());
+                        variantDto.setColor(variant.getColor());
+                        variantDto.setSize(variant.getSize());
+                        variantDto.setImageUrls(variant.getImageUrls()); // Aquí están las imágenes
+                        variantDto.setStock(variant.getStock());
+                        return variantDto;
+                    })
+                    .collect(Collectors.toList()));
+
+            return dto;
+        }).toList();
+    }
+
 
 
 }

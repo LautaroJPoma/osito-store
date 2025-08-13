@@ -5,12 +5,15 @@ import java.util.List;
 public class ProductVariantDTO {
     private Long id;
     private String color;
+    private String colorHex;
     private String size;
 
     private Long productId;
     private Long postId;
 
     private List<String> imageUrls;
+
+    private Long stock;
 
     public ProductVariantDTO() {
     }
@@ -62,5 +65,23 @@ public class ProductVariantDTO {
     public void setImageUrls(List<String> imageUrls) {
         this.imageUrls = imageUrls;
     }
+
+    public String getColorHex() {
+        return colorHex;
+    }
+
+    public void setColorHex(String colorHex) {
+        this.colorHex = colorHex;
+    }
+
+    public Long getStock() {
+        return stock;
+    }
+
+    public void setStock(Long stock) {
+        this.stock = stock;
+    }
+
+    
 
 }

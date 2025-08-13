@@ -10,6 +10,20 @@ export interface Post {
     price: number;
     stock: number;
     categoryId: number;
+    sellerId: number;
+   
+    variants: PostVariant[];
+}
+
+export interface PostVariant {
+  id?: number;
+  color: string;
+  colorHex: string;
+  size: string;
+  images?: File[];
+  imageUrls?: string[];
+  stock: number;
+  isSizeOnly?: boolean;
 }
 
 export interface User {
@@ -28,6 +42,7 @@ export interface AuthenticationResponse {
     token: string;
     username: string;
     email: string;
+    userId: number;
   }
 
   export interface RegisterRequest {

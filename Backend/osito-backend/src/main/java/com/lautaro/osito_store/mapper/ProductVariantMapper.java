@@ -16,10 +16,12 @@ public class ProductVariantMapper {
         ProductVariantDTO dto = new ProductVariantDTO();
         dto.setId(variant.getId());
         dto.setColor(variant.getColor());
+        dto.setColorHex(variant.getColorHex());
         dto.setSize(variant.getSize());
         dto.setProductId(variant.getProduct() != null ? variant.getProduct().getId() : null);
         dto.setPostId(variant.getPost() != null ? variant.getPost().getId() : null);
         dto.setImageUrls(variant.getImageUrls());
+        dto.setStock(variant.getStock());
 
         return dto;
     }
@@ -33,6 +35,9 @@ public class ProductVariantMapper {
         variant.setSize(dto.getSize());
         variant.setProduct(product);
         variant.setPost(post);
+        variant.setImageUrls(dto.getImageUrls());
+        variant.setColorHex(dto.getColorHex());
+        variant.setStock(dto.getStock());
 
         return variant;
     }
@@ -43,9 +48,12 @@ public class ProductVariantMapper {
     ProductVariant variant = new ProductVariant();
     variant.setId(dto.getId());
     variant.setColor(dto.getColor());
+    variant.setColorHex(dto.getColorHex());
     variant.setSize(dto.getSize());
     variant.setProduct(product);
     variant.setImageUrls(dto.getImageUrls());
+    variant.setStock(dto.getStock());
+    
    
     return variant;
 }

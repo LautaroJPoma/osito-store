@@ -1,11 +1,10 @@
-
 import { Link } from "react-router-dom";
 import type { Post } from "../types";
 
+export default function PostCard({ post }: { post: Post }) {
+  const firstImageUrl =
+    post.variants?.[0]?.imageUrls?.[0] || "/images/default-image.png";
 
-
-export default function PostCard({post}: {post: Post}) {
-  
   return (
     <article
       className="w-full h-[420px] max-w-xs rounded-3xl bg-white p-4 shadow-sm flex
@@ -14,9 +13,13 @@ export default function PostCard({post}: {post: Post}) {
     >
       <div className="flex justify-center items-center w-full h-60">
         <img
-          className="h-full object-contain"
-          src="public/images/Adidas.jpeg"
-          alt="Zapatilla Adidas"
+          className="h-full w-full object-contain"
+          src={firstImageUrl}
+          alt={post.title}
+          onError={(e) => {
+           
+            (e.target as HTMLImageElement).src = "/images/default-image.png";
+          }}
         />
       </div>
 
@@ -27,9 +30,9 @@ export default function PostCard({post}: {post: Post}) {
       <div className="mt-4 flex justify-between items-center">
         <span className="text-lg font-bold text-green-600">${post.price}</span>
         <Link to={`/posts/${post.id}`}>
-        <button className="text-sm bg-black text-white px-3 py-1 rounded-lg hover:bg-gray-800">
-          Ver más
-        </button>
+          <button className="text-sm bg-black text-white px-3 py-1 rounded-lg hover:bg-gray-800">
+            Ver más
+          </button>
         </Link>
       </div>
     </article>

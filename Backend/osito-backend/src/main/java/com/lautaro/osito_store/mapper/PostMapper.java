@@ -29,7 +29,6 @@ public class PostMapper {
     dto.setDescription(post.getDescription());
     dto.setPrice(post.getPrice());
     dto.setStock(post.getStock());
-    dto.setImageUrls(post.getImageUrls());
     dto.setStatus(post.getStatus() != null ? post.getStatus().toString() : null);
     dto.setProductId(post.getProduct() != null ? post.getProduct().getId() : null);
     dto.setCategoryId(post.getCategory() != null ? post.getCategory().getId() : null);
@@ -51,7 +50,6 @@ public Post toEntity(PostDTO dto, Product product, Category category, User selle
     post.setDescription(dto.getDescription());
     post.setPrice(dto.getPrice());
     post.setStock(dto.getStock());
-    post.setImageUrls(dto.getImageUrls());
     post.setProduct(product);
     post.setCategory(category);
     post.setSeller(seller);

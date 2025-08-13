@@ -8,7 +8,7 @@ const [userName, setUserName] = useState<string | null>(null);
 
 
 useEffect(() => {
-  // Leer el nombre del usuario al cargar el componente
+  
   const storedUserName = localStorage.getItem("username");
   if (storedUserName) {
     setUserName(storedUserName);
@@ -55,15 +55,25 @@ useEffect(() => {
               </div>
             </Link>
 
-            <Link to="/login">
-              <div className="group flex items-center overflow-hidden cursor-pointer">
-                <IconUser className="h-8 w-8 text-gray-800 transition-all duration-300" />
-
-                <span className="ml-2 max-w-0 opacity-0 group-hover:max-w-[200px] group-hover:opacity-100 transition-all duration-300 text-m text-gray-800 whitespace-nowrap">
-                {userName || "Iniciar sesión"}
-                </span>
-              </div>
-            </Link>
+            {userName ? (
+              <Link to="/profile">
+                <div className="group flex items-center overflow-hidden cursor-pointer">
+                  <IconUser className="h-8 w-8 text-gray-800 transition-all duration-300" />
+                  <span className="ml-2 max-w-0 opacity-0 group-hover:max-w-[200px] group-hover:opacity-100 transition-all duration-300 text-m text-gray-800 whitespace-nowrap">
+                    {userName}
+                  </span>
+                </div>
+              </Link>
+            ) : (
+              <Link to="/login">
+                <div className="group flex items-center overflow-hidden cursor-pointer">
+                  <IconUser className="h-8 w-8 text-gray-800 transition-all duration-300" />
+                  <span className="ml-2 max-w-0 opacity-0 group-hover:max-w-[200px] group-hover:opacity-100 transition-all duration-300 text-m text-gray-800 whitespace-nowrap">
+                    Iniciar sesión
+                  </span>
+                </div>
+              </Link>
+            )}
 
             <Link to="/cart">
               <div className="group flex items-center overflow-hidden cursor-pointer">

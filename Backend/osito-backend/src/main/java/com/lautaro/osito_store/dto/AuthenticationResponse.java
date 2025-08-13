@@ -4,6 +4,7 @@ public class AuthenticationResponse {
     private String token;
     private String username;
     private String email;
+    private Long userId;
 
    
     public String getToken() {
@@ -28,6 +29,14 @@ public class AuthenticationResponse {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     

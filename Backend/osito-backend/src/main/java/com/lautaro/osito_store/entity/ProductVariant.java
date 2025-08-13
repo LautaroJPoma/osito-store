@@ -3,6 +3,8 @@ package com.lautaro.osito_store.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -18,9 +20,15 @@ public class ProductVariant {
     private Long id;
     
     private String color;
+
+    private String colorHex;
+
     private String size;
+
+    private Long stock;
     
     @ManyToOne
+    @JsonBackReference
     private Product product;
 
     @ManyToOne
@@ -76,6 +84,22 @@ public class ProductVariant {
 
     public void setImageUrls(List<String> imageUrls) {
         this.imageUrls = imageUrls;
+    }
+
+    public String getColorHex() {
+        return colorHex;
+    }
+
+    public void setColorHex(String colorHex) {
+        this.colorHex = colorHex;
+    }
+
+    public Long getStock() {
+        return stock;
+    }
+
+    public void setStock(Long stock) {
+        this.stock = stock;
     }
 
 

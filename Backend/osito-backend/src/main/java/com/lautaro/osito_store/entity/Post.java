@@ -1,16 +1,16 @@
 package com.lautaro.osito_store.entity;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+
 import java.util.HashSet;
-import java.util.List;
+
 import java.util.Set;
 
 import com.lautaro.osito_store.enums.PostStatus;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -38,15 +38,11 @@ public class Post {
 
     private Integer stock;
 
-    @ElementCollection
-    private List<String> imageUrls = new ArrayList<>();
-
     private PostStatus status = PostStatus.ACTIVE;
 
-   @OneToOne
-@JoinColumn(name = "product_id")
-private Product product;
-
+    @OneToOne
+    @JoinColumn(name = "product_id")
+    private Product product;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
@@ -99,8 +95,6 @@ private Product product;
         this.price = price;
     }
 
-
-
     public Product getProduct() {
         return product;
     }
@@ -141,14 +135,6 @@ private Product product;
         this.stock = stock;
     }
 
-    public List<String> getImageUrls() {
-        return imageUrls;
-    }
-
-    public void setImageUrls(List<String> imageUrls) {
-        this.imageUrls = imageUrls;
-    }
-
     public PostStatus getStatus() {
         return status;
     }
@@ -173,7 +159,5 @@ private Product product;
         this.category = category;
     }
     
-
     
-
 }

@@ -64,6 +64,7 @@ public class AuthenticationService {
         response.setToken(jwtToken);
         response.setUsername(user.getName());
         response.setEmail(user.getEmail());
+        response.setUserId(user.getId());
         return response;
     }
 

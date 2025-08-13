@@ -2,10 +2,6 @@ package com.lautaro.osito_store.dto;
 
 import java.util.List;
 
-
-
-
-
 public class PostDTO {
 
     private Long id;
@@ -24,12 +20,9 @@ public class PostDTO {
 
     private Long categoryId;
 
-    private List<String> imageUrls;
-
     private Long sellerId;
 
     private List<ProductVariantDTO> variants;
-
 
     public String getTitle() {
         return title;
@@ -87,14 +80,6 @@ public class PostDTO {
         this.productId = productId;
     }
 
-    public List<String> getImageUrls() {
-        return imageUrls;
-    }
-
-    public void setImageUrls(List<String> imageUrls) {
-        this.imageUrls = imageUrls;
-    }
-
     public Long getSellerId() {
         return sellerId;
     }
@@ -118,8 +103,5 @@ public class PostDTO {
     public void setVariants(List<ProductVariantDTO> variants) {
         this.variants = variants;
     }
-
-    
-  
 
 }
