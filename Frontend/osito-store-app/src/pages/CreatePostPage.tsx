@@ -42,15 +42,18 @@ function addSizeToVariant(index: number) {
   setPostData((prev) => {
     const variants = [...prev.variants];
     const current = variants[index];
+
+    // Crear nueva variante solo de talla
     variants.splice(index + 1, 0, {
       color: current.color,
       colorHex: current.colorHex,
       size: "",
       stock: 0,
-      images: [],
-      imageUrls: [],
+      images: [],      // NO copiamos imágenes locales
+      imageUrls: current.imageUrls || [], // Copiamos URLs existentes
       isSizeOnly: true,
     });
+
     return { ...prev, variants };
   });
 }
@@ -158,10 +161,10 @@ function addSizeToVariant(index: number) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateForm()) return;
-
+  
     try {
       setLoading(true);
-
+  
       // 1) Crear post sin imágenes
       const createdPost = await createPost({
         title: postData.title,
@@ -177,51 +180,60 @@ function addSizeToVariant(index: number) {
           stock: v.stock,
         })),
       });
-
+  
+      // 2) Subir imágenes por color
       const uploadedImagesMap = new Map<string, string[]>();
-
-      // 3) Subir imágenes de variantes
+  
       for (let i = 0; i < createdPost.variants.length; i++) {
         const variant = createdPost.variants[i];
         const files = postData.variants[i]?.images;
         const key = `${variant.color.toLowerCase()}-${variant.colorHex.toLowerCase()}`;
-
+  
         if (uploadedImagesMap.has(key)) {
-          // Ya subimos imágenes para esta combinación, asignar URLs directamente
+          // Este color ya subió imágenes, solo asignarlas a tallas
           const existingUrls = uploadedImagesMap.get(key)!;
           setPostData((prev) => {
             const updatedVariants = [...prev.variants];
             updatedVariants[i].imageUrls = existingUrls;
             return { ...prev, variants: updatedVariants };
           });
-        } else if (files && files.length > 0) {
-          // Subir imágenes y guardar URLs en el mapa
-          const formData = new FormData();
-          for (const file of files) {
-            formData.append("files", file);
+        } else {
+          // Primer registro de este color
+          if (files && files.length > 0) {
+            const formData = new FormData();
+            files.forEach((file) => formData.append("files", file));
+            const response = await uploadVariantImages(variant.id!, formData);
+            const newUrls = response.data.imageUrls || [];
+            uploadedImagesMap.set(key, newUrls);
+  
+            setPostData((prev) => {
+              const updatedVariants = [...prev.variants];
+              updatedVariants[i].imageUrls = newUrls;
+              return { ...prev, variants: updatedVariants };
+            });
+          } else {
+            // No hay imágenes para este color (caso raro), poner vacío
+            setPostData((prev) => {
+              const updatedVariants = [...prev.variants];
+              updatedVariants[i].imageUrls = [];
+              return { ...prev, variants: updatedVariants };
+            });
           }
-          const response = await uploadVariantImages(variant.id!, formData);
-          const newUrls = response.data.imageUrls || [];
-          uploadedImagesMap.set(key, newUrls);
-
-          setPostData((prev) => {
-            const updatedVariants = [...prev.variants];
-            updatedVariants[i].imageUrls = newUrls;
-            return { ...prev, variants: updatedVariants };
-          });
         }
       }
-
+  
       navigate(`/posts/${createdPost.id}`);
     } catch (error) {
-      setError(
-        error instanceof Error ? error.message : "Error al crear publicación"
-      );
+      setError(error instanceof Error ? error.message : "Error al crear publicación");
       console.error("Error creating post:", error);
     } finally {
       setLoading(false);
     }
   };
+  
+  
+
+
 
   const handleInputChange = (
     e: React.ChangeEvent<

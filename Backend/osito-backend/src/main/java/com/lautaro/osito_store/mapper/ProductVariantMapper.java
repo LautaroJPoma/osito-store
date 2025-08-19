@@ -1,5 +1,7 @@
 package com.lautaro.osito_store.mapper;
 
+import java.util.ArrayList;
+
 import org.springframework.stereotype.Component;
 
 import com.lautaro.osito_store.dto.ProductVariantDTO;
@@ -20,7 +22,8 @@ public class ProductVariantMapper {
         dto.setSize(variant.getSize());
         dto.setProductId(variant.getProduct() != null ? variant.getProduct().getId() : null);
         dto.setPostId(variant.getPost() != null ? variant.getPost().getId() : null);
-        dto.setImageUrls(variant.getImageUrls());
+        // Clonamos la lista al pasar al DTO
+        dto.setImageUrls(variant.getImageUrls() != null ? new ArrayList<>(variant.getImageUrls()) : new ArrayList<>());
         dto.setStock(variant.getStock());
 
         return dto;
@@ -35,27 +38,33 @@ public class ProductVariantMapper {
         variant.setSize(dto.getSize());
         variant.setProduct(product);
         variant.setPost(post);
-        variant.setImageUrls(dto.getImageUrls());
         variant.setColorHex(dto.getColorHex());
         variant.setStock(dto.getStock());
+        // Clonamos la lista al crear la entidad
+        // NO copiar imágenes de variantes existentes
+variant.setImageUrls(dto.getImageUrls() != null ? new ArrayList<>(dto.getImageUrls()) : new ArrayList<>());
+
 
         return variant;
     }
 
     public ProductVariant toEntity(ProductVariantDTO dto, Product product) {
-    if (dto == null) return null;
+        if (dto == null) return null;
 
-    ProductVariant variant = new ProductVariant();
-    variant.setId(dto.getId());
-    variant.setColor(dto.getColor());
-    variant.setColorHex(dto.getColorHex());
-    variant.setSize(dto.getSize());
-    variant.setProduct(product);
-    variant.setImageUrls(dto.getImageUrls());
-    variant.setStock(dto.getStock());
-    
-   
-    return variant;
+        ProductVariant variant = new ProductVariant();
+        variant.setId(dto.getId());
+        variant.setColor(dto.getColor());
+        variant.setColorHex(dto.getColorHex());
+        variant.setSize(dto.getSize());
+        variant.setProduct(product);
+        variant.setStock(dto.getStock());
+        // Clonamos la lista
+       // NO copiar imágenes de variantes existentes
+variant.setImageUrls(dto.getImageUrls() != null ? new ArrayList<>(dto.getImageUrls()) : new ArrayList<>());
+
+
+        return variant;
+    }
 }
 
-}
+

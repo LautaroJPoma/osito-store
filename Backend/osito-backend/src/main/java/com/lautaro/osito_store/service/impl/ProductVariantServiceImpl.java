@@ -1,8 +1,10 @@
 package com.lautaro.osito_store.service.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -78,17 +80,33 @@ public ProductVariantDTO createProductVariant(ProductVariantDTO dto) {
 
 
 
-    @Override
-    public Set<ProductVariant> createAndLinkToProduct(List<ProductVariantDTO> variantDTOs, Product product) {
-        Set<ProductVariant> variants = new HashSet<>();
+  @Override
+public Set<ProductVariant> createAndLinkToProduct(List<ProductVariantDTO> variantDTOs, Product product) {
+    // Mapa para separar variantes por color
+    Map<String, List<ProductVariant>> variantsByColor = new HashMap<>();
+    Set<ProductVariant> variants = new HashSet<>();
 
-        for (ProductVariantDTO dto : variantDTOs) {
-            ProductVariant variant = variantMapper.toEntity(dto, product);
-            variants.add(variant);
+    for (ProductVariantDTO dto : variantDTOs) {
+        ProductVariant variant = variantMapper.toEntity(dto, product);
+
+        // Si ya hay variantes de ese color, compartimos las imágenes de la primera
+        if (variantsByColor.containsKey(dto.getColor())) {
+            List<ProductVariant> sameColorVariants = variantsByColor.get(dto.getColor());
+            // Solo compartimos las imágenes de la primera variante del color
+            variant.setImageUrls(new ArrayList<>(sameColorVariants.get(0).getImageUrls()));
+        } else {
+            // Primera variante de este color: usa las imágenes que vienen del DTO
+            variant.setImageUrls(dto.getImageUrls() != null ? new ArrayList<>(dto.getImageUrls()) : new ArrayList<>());
         }
 
-        return variants;
+        variants.add(variant);
+        variantsByColor.computeIfAbsent(dto.getColor(), k -> new ArrayList<>()).add(variant);
     }
+
+    return variants;
+}
+
+
 
     @Override
     public ProductVariantDTO getProductVariant(Long id) {

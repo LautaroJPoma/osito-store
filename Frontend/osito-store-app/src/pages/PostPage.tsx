@@ -35,33 +35,39 @@ export default function PostPage() {
 
   // Agrupar variantes por color (usando mismo enfoque que backend)
   const variantsGroupedByColor =
-    post?.variants?.reduce(
-      (acc, variant) => {
-        const key = `${variant.color.toLowerCase()}-${variant.colorHex.toLowerCase()}`;
-        if (!acc[key]) {
-          acc[key] = {
-            color: variant.color,
-            colorHex: variant.colorHex,
-            sizes: [],
-            images: variant.imageUrls || [], // Usamos imágenes de la primera variante
-          };
-        }
-        acc[key].sizes.push({
-          size: variant.size,
-          stock: variant.stock,
-        });
-        return acc;
-      },
-      {} as Record<
-        string,
-        {
-          color: string;
-          colorHex: string;
-          sizes: { size: string; stock: number; variantId?: string }[];
-          images: string[];
-        }
-      >
-    ) || {};
+  post?.variants?.reduce((acc, variant) => {
+    const key = `${variant.color.toLowerCase()}-${variant.colorHex.toLowerCase()}`;
+    if (!acc[key]) {
+      // Buscar la primera variante de este color con imágenes
+      const images = post.variants.find(
+        (v) =>
+          v.color.toLowerCase() === variant.color.toLowerCase() &&
+          v.colorHex.toLowerCase() === variant.colorHex.toLowerCase() &&
+          v.imageUrls?.length
+      )?.imageUrls || [];
+
+      acc[key] = {
+        color: variant.color,
+        colorHex: variant.colorHex,
+        sizes: [],
+        images, // <-- usamos las imágenes correctas
+      };
+    }
+    acc[key].sizes.push({
+      size: variant.size,
+      stock: variant.stock,
+    });
+    return acc;
+  }, {} as Record<
+    string,
+    {
+      color: string;
+      colorHex: string;
+      sizes: { size: string; stock: number }[];
+      images: string[];
+    }
+  >) || {};
+
 
   // Seleccionar primer color al cargar
   useEffect(() => {
